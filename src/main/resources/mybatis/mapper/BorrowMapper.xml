@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.team4.lib.model.mapper.BorrowOrderModelMapper">
+
+	<resultMap id="BorrowOrderResultMap" type="BorrowOrder">
+		<result property="idUser" column="id_user" />
+		<result property="idBook" column="id_book" />
+		<result property="borrowDate" column="borrow_date" />
+		<result property="returnDate" column="return_date" />
+		<result property="createUser" column="create_user" />
+		<result property="updateUser" column="update_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="isDeleted" column="id_deleted" />
+	</resultMap>
+
+	<resultMap id="BorrowBookResultMap" type="BorrowBookDto">
+		<result property="idUser" column="id_user" />
+		<result property="username" column="user_name" />
+		<result property="idBook" column="id_book" />
+		<result property="borrowDate" column="borrow_date" />
+		<result property="returnDate" column="return_date" />
+		<result property="outStock" column="out_stock" />
+	</resultMap>
+
+	<select id="getListBorrowOrder" resultMap="BorrowBookResultMap">
+		SELECT bo.id,
+		bo.id_user,
+		bo.id_book, bo.borrow_date, bo.return_date, bo.note,
+		bo.status,
+		b.title, b.stock, b.out_stock, u.user_name
+		FROM borrow_orders bo
+		INNER JOIN books b 
+		ON bo.id_book = b.id
+		INNER JOIN users u
+		ON bo.id_user = u.id
+	</select>
+
+	<select id="findBorrowOrderById" parameterType="Long"
+		resultMap="BorrowOrderResultMap">
+		SELECT *
+		FROM borrow_orders bo
+		WHERE bo.id = #{id}
+	</select>
+
+	<select id="getListBorrowOrderByUser" parameterType="Long"
+		resultMap="BorrowBookResultMap">
+		SELECT bo.id,
+		bo.id_user,
+		bo.id_book, bo.borrow_date,
+		bo.return_date, bo.note, bo.status,
+		b.title, b.stock, b.out_stock
+		FROM
+		borrow_orders bo
+		INNER JOIN books b
+		ON bo.id_book = b.id
+		WHERE bo.id_user
+		=
+		#{id}
+	</select>
+
+	<select id="findBorrowOrderBookById" parameterType="Long"
+		resultMap="BorrowBookResultMap">
+		SELECT bo.id,
+		u.user_name,
+		bo.id_book, bo.borrow_date,
+		bo.return_date, bo.note, bo.status,
+		b.title, b.stock, b.out_stock
+		FROM
+		borrow_orders bo
+		INNER JOIN books b
+		ON bo.id_book = b.id
+		INNER JOIN users u
+		ON bo.id_user = u.id
+		WHERE bo.id = #{id}
+	</select>
+
+	<select id="countBorrowOrderByUser" parameterType="Long"
+		resultType="Long">
+		SELECT COUNT(*)
+		FROM borrow_orders bo
+		WHERE bo.id_user =
+		#{id}
+		AND (bo.status = 0 OR bo.status = 1)
+	</select>
+
+	<insert id='insertBorrowOrder' parameterType='BorrowOrder'>
+		INSERT INTO
+		borrow_orders(id_user, id_book, borrow_date, return_date, note,
+		status,
+		create_user, create_time, update_user, update_time)
+		VALUES(#{idUser},#{idBook},#{borrowDate},#{returnDate},#{note},#{status},#{createUser},#{createTime},#{updateUser},#{updateTime})
+	</insert>
+
+	<update id='updateStatusBorrowOrder' parameterType='BorrowOrder'>
+		UPDATE
+		borrow_orders bo
+		SET bo.status = #{status}, bo.update_user =
+		#{updateUser},
+		bo.update_time
+		= #{updateTime} WHERE bo.id = #{id};
+	</update>
+</mapper>

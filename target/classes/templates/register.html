@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Register Page</title>
+<link rel="stylesheet" type="text/css" media="all"
+	th:href="@{/css/style.css}" />
+<script type="text/javascript" th:src="@{/js/jquery-3.4.0.min.js}"></script>
+<script th:src="@{/js/jquery.validate.min.js}"></script>
+</head>
+<body>
+	<div class="login-page">
+		<div class="form">
+			<form method="POST" th:action="@{/user/register}" th:object="${userRegister}" id="form-register">
+				<p class="error" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+				<input type="text" th:field="*{username}" placeholder="name"/>
+				<span class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+				<input type="password" th:field="*{password}" placeholder="password"/>
+				<span class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+				<input type="password" name="rePassword" id="rePassword" placeholder="confirm password"/>
+				<span class="error" th:if="${errorPassword != null}" th:text="${errorPassword}"></span>
+				<input type="email" th:field="*{mail}" placeholder="email address"/>
+				<span class="error" th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}"></span>
+				<input type="text" th:field="*{address}" placeholder="address"/>
+				<span class="error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+				<input type="text" th:field="*{phone}" placeholder="phone"/>
+				<span class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+				<p class="error" th:if="${errorPhone != null}" th:text="${errorPhone}"></p>
+				<button>create</button>
+				<p class="message">
+					Already registered? <a th:href="@{/login}">Sign In</a>
+				</p>
+			</form>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function() {
+
+			$("#form-register").validate({
+				rules : {
+					username : "required",
+					password : "required",
+					rePassword : {
+						required : true,
+						equalTo : "#password"
+					},
+					mail : "required",
+					address : "required",
+					phone : "required"
+				},
+				messages : {
+					username : "Tên đăng nhập không được để trống",
+					password : "Mật khẩu không được để trống",
+					rePassword : {
+						equalTo : "Mật khẩu xác nhận không đúng",
+						required : "Mật khẩu xác nhận không được để trống"
+					},
+					mail : "Email không được để trống",
+					address : "Địa chỉ không được để trống",
+					phone: "Số điện thoại không được để trống"
+				}
+			});
+		});
+	</script>
+</body>
+</html>

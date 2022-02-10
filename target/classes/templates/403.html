@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Error!</title>
+</head>
+<body>
+Bạn không có quyền hoặc xảy ra lỗi !!!!
+<p th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+</body>
+</html>

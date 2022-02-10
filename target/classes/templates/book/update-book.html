@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Update Book</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+	integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+	crossorigin="anonymous">
+<script th:src="@{/js/jquery.validate.min.js}"></script>
+<link rel="stylesheet" type="text/css" media="all"
+	th:href="@{/css/customStyle.css}" />
+</head>
+<body>
+	<div th:replace="layout :: header"></div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="text-center">Cập nhật sách</h3>
+			</div>
+			<div class="col-lg-3"></div>
+			<div class="col-lg-6">
+				<form class="form-horizontal" id="updateBook" method="post"
+					th:action="@{/book/admin/cap-nhat-sach}" th:object="${book}">
+					<input type="hidden" th:field="*{id}">
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="email">Tiêu đề
+							sách:</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" id="title"
+								th:field="*{title}" placeholder="Tiêu đề sách">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="email">Nội dung
+							tóm tắt:</label>
+						<div class="col-sm-9">
+							<!-- <input type="text" class="form-control" th:field="*{contentShort}" placeholder="Nội dung tóm tắt"> -->
+							<textarea class="form-control" rows="5"
+								th:field="*{contentShort}" name="text"></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Số lượng
+							sách:</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" th:field="*{stock}"
+								placeholder="Số lượng sách">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Tác giả:</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" th:field="*{author}"
+								placeholder="Tác giả">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Năm xuất
+							bản</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" th:field="*{year}"
+								placeholder="Năm xuất bản">
+						</div>
+					</div>
+					<div class="form-group" th:if="${not #lists.isEmpty(listCategory)}">
+						<label class="control-label col-sm-3" for="pwd">Thể loại</label>
+						<div class="col-sm-9">
+							<select th:field="*{idCategory}" class="form-control fill">
+								<th:block th:each="category : ${listCategory}">
+									<option
+										th:selected="${category.getId() == book.getIdCategory()}"
+										th:value="${category.getId()}" th:text="${category.getName()}"></option>
+								</th:block>
+							</select>
+						</div>
+					</div>
+					<!-- <div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Trạng thái</label>
+						<div class="col-sm-9">
+							<select name="status" id="status" class="form-control fill">
+								<option th:selected="${userById.getStatus() == 0}" value="0">Hoạt động</option>
+								<option th:selected="${userById.getStatus() == 1}" value="1">Dừng hoạt động</option>
+							</select>
+						</div>
+					</div> -->
+					<div class="form-group">
+						<div class="col-sm-offset-3 col-sm-2">
+							<button type="submit" class="btn btn-default">Cập nhật</button>
+						</div>
+						<div class="col-sm-3">
+							<a th:href=@{/home}><button type="button"
+									class="btn btn-default">Hủy</button></a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+	<div th:replace="layout :: footer"></div>
+
+	<script>
+		$("#updateBook").validate({
+			rules : {
+				title : "required",
+				contentShort : "required",
+				stock : {
+					required : true,
+					number : true
+				},
+				author : "required",
+				year : "required"
+			},
+			messages : {
+				title : "Tiêu đề sách không được để trống",
+				contentShort : "Nội dung không được để trống",
+				stock : {
+					required : "Số lượng sách không được để trống",
+					number : "Số lượng sách phải là số"
+				},
+				author : "Tác giả không được để trống",
+				year : "Năm xuất bản sách không được để trống"
+			}
+		});
+	</script>
+</body>
+</html>

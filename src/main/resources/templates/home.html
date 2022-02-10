@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Team 4</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+	integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+	crossorigin="anonymous">
+<script th:src="@{/js/jquery.validate.min.js}"></script>
+<link rel="stylesheet" type="text/css" media="all"
+	th:href="@{/css/customStyle.css}" />
+</head>
+<body>
+	<div th:replace="layout :: header"></div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="text-center">Danh sách sách</h3>
+				<br>
+				<th:block th:if="${user.getRole() != 0}">
+					<button type="button" class="btn btn-primary col-lg-offset-2"
+						data-toggle="modal" data-target="#addNewBook">Thêm mới
+						sách</button>
+				</th:block>
+				<p class="text-center" style="color: red;" th:if="${error != null}"
+					th:text="${error}"></p>
+			</div>
+			<div class="col-lg-offset-2 col-lg-9">
+				<table id="table-list-book" class="table table-striped">
+					<thead>
+						<tr>
+							<th>STT</th>
+							<th>Tiêu đề sách</th>
+							<th>Thao tác</th>
+						</tr>
+					</thead>
+					<tbody>
+						<th:block th:if="${#lists.isEmpty(listBook)}">
+							<tr>
+								<td>Không có dữ liệu</td>
+							</tr>
+						</th:block>
+						<th:block th:unless="${#lists.isEmpty(listBook)}">
+							<tr th:each="book,idx : ${listBook}">
+								<td th:text="${idx.index+1}"></td>
+								<td th:text="${book.getTitle()}">Không có dữ liệu</td>
+								<td><a
+									th:href="@{/book/xem-noi-dung/{id}(id=${book.getId()})}"><i
+										class="far fa-eye"></i></a> <a data-toggle="modal"
+									th:data-target="${'#borrow' + book.getId()}"><i
+										class="fas fa-book-medical"></i></a> <th:block
+										th:if="${user.getRole() != 0}">
+										<a
+											th:href="@{/book/admin/cap-nhat-sach/{id}(id=${book.getId()})}"><i
+											class="fas fa-edit"></i></a>
+									</th:block> <!-- Modal request borrow book -->
+									<div class="modal fade bd-example-modal-lg" tabindex="-1"
+										th:id="|borrow${book.getId()}|" role="dialog"
+										aria-labelledby="myLargeModalLabel" aria-hidden="true">
+										<div class="modal-dialog modal-lg ">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="exampleModalLongTitle">Yêu
+														cầu mượn sách</h5>
+													<button type="button" class="close" data-dismiss="modal"
+														aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<form class="form-horizontal" id="borrowBook" method="post"
+													th:action="@{/book/borrow}">
+													<div class="modal-body">
+														<input type="hidden" name="idBook"
+															th:value="${book.getId()}">
+														<div class="form-group">
+															<label class="control-label col-sm-3" for="email">Tiêu
+																đề sách:</label>
+															<div class="col-sm-9">
+																<input type="text" class="form-control" id="title"
+																	th:value="${book.getTitle()}" readonly>
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label col-sm-3" for="pwd">Ngày
+																mượn:</label>
+															<div class="col-sm-9">
+																<input type="date" class="form-control" id="borrowDate" required
+																	data-validation="date"
+																	data-validation-format="yyyy-MM-dd"
+																	th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"
+																	name="borrowDate">
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label col-sm-3" for="pwd">Ngày
+																trả:</label>
+															<div class="col-sm-9">
+																<input type="date" class="form-control" id="returnDate" required
+																	data-validation="date"
+																	data-validation-format="yyyy-MM-dd"
+																	th:min="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"
+																	name="returnDate">
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label col-sm-3" for="pwd">Chú
+																ý:</label>
+															<div class="col-sm-9">
+																<input type="text" class="form-control" name="note"
+																	placeholder="Chú ý">
+															</div>
+														</div>
+													</div>
+													<div class="modal-footer">
+														<button type="submit" class="btn btn-primary">Lưu</button>
+														<button type="button" class="btn btn-secondary"
+															data-dismiss="modal">Đóng</button>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div></td>
+							</tr>
+						</th:block>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Modal add new book -->
+	<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog"
+		id="addNewBook" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg ">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Thêm mới
+						sách</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form class="form-horizontal" id="addBook" method="post"
+					th:action="@{/book/admin/them-moi-sach}">
+					<div class="modal-body">
+						<div class="form-group">
+							<label class="control-label col-sm-3" for="email">Tiêu đề
+								sách:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="title" name="title"
+									placeholder="Tiêu đề sách">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3" for="email">Nội
+								dung tóm tắt:</label>
+							<div class="col-sm-9">
+								<textarea class="form-control" rows="5" name="contentShort"></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3" for="pwd">Số lượng
+								sách:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="stock"
+									placeholder="Số lượng sách">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3" for="pwd">Tác giả:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="author"
+									placeholder="Tác giả">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3" for="pwd">Năm xuất
+								bản</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" name="year"
+									placeholder="Năm xuất bản">
+							</div>
+						</div>
+						<div class="form-group"
+							th:if="${not #lists.isEmpty(listCategory)}">
+							<label class="control-label col-sm-3" for="pwd">Thể loại</label>
+							<div class="col-sm-9">
+								<select name="idCategory" class="form-control fill">
+									<th:block th:each="category : ${listCategory}">
+										<option th:value="${category.getId()}"
+											th:text="${category.getName()}"></option>
+									</th:block>
+								</select>
+							</div>
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-primary">Lưu</button>
+						<button type="button" class="btn btn-secondary"
+							data-dismiss="modal">Đóng</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript"
+		src="https://cdn.datatables.net/v/ju/dt-1.10.18/datatables.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('#table-list-user').DataTable({
+				"language" : {
+					"zeroRecords" : "Không tìm thấy bản ghi nào",
+					"info" : "",
+					"emptyTable" : "Không có dữ liệu",
+					"search" : "Tìm kiếm:",
+					"infoFiltered" : "",
+					"infoEmpty" : "",
+					"lengthMenu" : "Hiển thị _MENU_ bản ghi"
+				}
+			});
+
+			$("#addBook").validate({
+				rules : {
+					title : "required",
+					contentShort : "required",
+					stock : {
+						required : true,
+						number : true
+					},
+					author : "required",
+					year : {
+						required : true,
+						number : true
+					}
+				},
+				messages : {
+					title : "Tiêu đề sách không được để trống",
+					contentShort : "Nội dung không được để trống",
+					stock : {
+						required : "Số lượng sách không được để trống",
+						number : "Số lượng sách phải là số"
+					},
+					author : "Tác giả không được để trống",
+					year : {
+						required : "Năm xuất bản sách không được để trống",
+						number : "Năm xuất bản sách phải là số"
+					}
+				}
+			});
+
+			/* $("#borrowBook").validate({
+				rules : {
+					borrowDate : "required",
+					returnDate : "required"
+				},
+				messages : {
+					borrowDate : "Ngày mượn sách không được để trống",
+					returnDate : "Ngày trả sách không được để trống"
+				}
+			}); */
+		});
+	</script>
+	<div th:replace="layout :: footer"></div>
+
+</body>
+</html>

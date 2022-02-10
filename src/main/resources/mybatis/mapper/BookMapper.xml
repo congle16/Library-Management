@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.team4.lib.model.mapper.BookModelMapper">
+
+	<resultMap id="BookResultMap" type="Book">
+		<result property="idCategory" column="id_category" />
+		<result property="contentShort" column="content_short" />
+		<result property="outStock" column="out_stock" />
+		<result property="createUser" column="create_user" />
+		<result property="updateUser" column="update_user" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="status" column="id_deleted" />
+	</resultMap>
+
+	<select id="getListBook" resultMap="BookResultMap">
+		SELECT
+		*
+		FROM books
+	</select>
+
+	<select id="findBookById" parameterType="Long"
+		resultMap="BookResultMap">
+		SELECT
+		*
+		FROM books b
+		WHERE b.id = #{id}
+	</select>
+
+	<insert id='insertBook' parameterType='Book'>
+		INSERT INTO
+		books(id_category, title, content_short, stock, author, year,
+		create_user, create_time, update_user, update_time)
+		VALUES(#{idCategory},#{title},#{contentShort},#{stock},#{author},#{year},#{createUser},#{createTime},#{updateUser},#{updateTime})
+	</insert>
+
+	<update id='updateBook' parameterType='Book'>
+		UPDATE books b
+		SET b.title
+		= #{title}, b.content_short = #{contentShort}, b.stock = #{stock},
+		b.author =
+		#{author}, b.year = #{year}, b.update_user = #{updateUser},
+		b.update_time = #{updateTime}
+		WHERE b.id = #{id};
+	</update>
+
+	<update id='updateOutStockBook' parameterType='Book'>
+		UPDATE books b
+		SET b.stock = #{stock},
+		b.out_stock = #{outStock}
+		WHERE b.id = #{id};
+	</update>
+</mapper>

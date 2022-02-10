@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Edit User</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<script th:src="@{/js/jquery.validate.min.js}"></script>
+<style>
+<
+style>
+	/* Remove the navbar's default rounded borders and increase the bottom margin */
+	.navbar {
+	margin-bottom: 50px;
+	border-radius: 0;
+}
+
+/* Remove the jumbotron's default bottom margin */
+.jumbotron {
+	margin-bottom: 0;
+}
+
+label.error {
+	color: red;
+	font-size: 1.2rem;
+}
+
+/* Add a gray background color and some padding to the footer */
+footer {
+	background-color: #f2f2f2;
+	padding: 25px;
+}
+</style>
+</head>
+<body>
+
+	<div th:replace="layout :: header"></div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="text-center">Thay đổi thông tin người dùng</h3>
+			</div>
+			<div class="col-lg-3"></div>
+			<div class="col-lg-6">
+				<form class="form-horizontal" id="editUser" method="post"
+					th:object="${userById}" th:action="@{/admin/thay-doi-thong-tin}">
+					<input type="hidden" th:field="*{id}" />
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="email">Tài
+							khoản:</label>
+
+						<div class="col-sm-9">
+							<input type="text" class="form-control" th:field="*{username}"
+								readonly="readonly" placeholder="Tài khoản"> <span
+								class="error" th:if="${#fields.hasErrors('username')}"
+								th:errors="*{username}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="email">Mật
+							khẩu:</label>
+						<div class="col-sm-9">
+							<input type="password" class="form-control" th:field="*{password}"
+								placeholder="Mật khẩu"> <span class="error"
+								th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Mail:</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" th:field="*{mail}"
+								readonly placeholder="Mail"> <span class="error"
+								th:if="${#fields.hasErrors('mail')}" th:errors="*{mail}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Địa chỉ:</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" th:field="*{address}"
+								placeholder="Địa chỉ"> <span class="error"
+								th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Điện
+							thoại:</label>
+						<div class="col-sm-9">
+							<input type="text" class="form-control" th:field="*{phone}"
+								placeholder="Điện thoại"> <span style="color: red;"
+								th:if="${errorPhone != null}" th:text="${errorPhone}"></span> <span
+								class="error" th:if="${#fields.hasErrors('phone')}"
+								th:errors="*{phone}"></span>
+						</div>
+					</div>
+					<div class="form-group" th:if="${not #lists.isEmpty(listRole)}">
+						<label class="control-label col-sm-3" for="pwd">Quyền</label>
+						<div class="col-sm-9">
+							<select name="role" id="role" class="form-control fill">
+								<th:block th:each="role : ${listRole}">
+									<option th:selected="${role.getId() == userById.getRole()}"
+										th:value="${role.getId()}" th:text="${role.getRoleName()}"></option>
+								</th:block>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-sm-3" for="pwd">Trạng thái</label>
+						<div class="col-sm-9">
+							<select name="status" id="status" class="form-control fill">
+								<option th:selected="${userById.getStatus() == 0}" value="0">Hoạt
+									động</option>
+								<option th:selected="${userById.getStatus() == 1}" value="1">Dừng
+									hoạt động</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-offset-3 col-sm-2">
+							<button type="submit" class="btn btn-default">Cập nhật</button>
+						</div>
+						<div class="col-sm-3">
+							<a th:href=@{/admin/nguoi-dung}><button type="button"
+									class="btn btn-default">Hủy</button></a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+	<div th:replace="layout :: footer"></div>
+
+	<script>
+		$("#editUser").validate({
+			rules : {
+				password : "required",
+				address : "required",
+				phone : {
+					required : true,
+					number : true
+				}
+			},
+			messages : {
+				password : "Mật khẩu không được để trống",
+				address : "Địa chỉ không được để trống",
+				phone : {
+					required : "Điện thoại không được để trống",
+					number : "Số điện thoại không đúng"
+				}
+			}
+		});
+	</script>
+</body>
+</html>

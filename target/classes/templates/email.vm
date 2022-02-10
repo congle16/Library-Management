@@ -1,0 +1,13 @@
+<html>
+ 
+<head></head>
+ 
+<body>
+    <p>Chào ${name},</p>
+    <p>Bạn đã yêu cầu thay đổi mật khẩu ngày <b>${create}</b></p>
+    <p>Trân trọng</p>${location}
+    <p>Vui lòng click vào link bên dưới để reset lại mật khẩu</p>
+    <p>${signature}</p>
+</body>
+ 
+</html>

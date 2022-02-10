@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>All Order</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css"
+	href="https://cdn.datatables.net/v/ju/dt-1.10.18/datatables.min.css" />
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+	integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+	crossorigin="anonymous">
+<script th:src="@{/js/jquery.validate.min.js}"></script>
+<link rel="stylesheet" type="text/css" media="all"
+	th:href="@{/css/customStyle.css}" />
+</head>
+<body>
+	<div th:replace="layout :: header"></div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="text-center">Danh sách mượn sách</h3>
+				<br>
+				<p class="text-center" style="color: red;" th:if="${error != null}" th:text="${error}"></p>
+			</div>
+			<div class="col-lg-offset-1 col-lg-10">
+				<table id="table-list-book" class="table table-striped">
+					<thead>
+						<tr>
+							<th>STT</th>
+							<th>Tiêu đề sách</th>
+							<th>Người mượn</th>
+							<th>Ngày mượn</th>
+							<th>Ngày trả</th>
+							<th>Trạng thái</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<th:block th:if="${#lists.isEmpty(listBorrowOrder)}">
+							<tr>
+								<td>Không có dữ liệu</td>
+							</tr>
+						</th:block>
+						<th:block th:unless="${#lists.isEmpty(listBorrowOrder)}">
+							<tr th:each="borrowOrder,idx : ${listBorrowOrder}">
+								<td th:text="${idx.index+1}"></td>
+								<!-- <td th:text="${borrowOrder.getId()}">Không có dữ liệu</td> -->
+								<td th:text="${borrowOrder.getTitle()}">Không có dữ liệu</td>
+								<td th:text="${borrowOrder.getUsername()}">Không có dữ liệu</td>
+								<td th:text="${#dates.format(borrowOrder.getBorrowDate(), 'dd-MM-yyyy')}">Không có dữ liệu</td>
+								<td th:text="${#dates.format(borrowOrder.getReturnDate(), 'dd-MM-yyyy')}">Không có dữ liệu</td>
+								<td th:if="${borrowOrder.getStatus() == 0}" th:text="Pendding"></td>
+								<td th:if="${borrowOrder.getStatus() == 1}" th:text="|Đã duyệt|"></td>
+								<td th:if="${borrowOrder.getStatus() == 2}" th:text="|Từ chối|"></td>
+								<td th:if="${borrowOrder.getStatus() == 3}" th:text="|Trả sách|"></td>
+								<td th:if="${borrowOrder.getStatus() == 4}" th:text="|Mất sách|"></td>
+								<th:block th:if="${user.getRole() == 1}">
+									<td>
+										<th:block th:if="${borrowOrder.getStatus() == 0}">
+											<a th:href="@{/book/danh-sach-muon-sach/phe-duyet/{id}(id=${borrowOrder.getId()})}"><i class="fas fa-book-medical"></i></a>
+										</th:block>
+										<th:block th:if="${borrowOrder.getStatus() == 1}">
+											<a th:href="@{/book/danh-sach-muon-sach/tra-sach/{id}(id=${borrowOrder.getId()})}"><i class="fas fa-exchange-alt"></i></a>
+											<a th:href="@{/book/danh-sach-muon-sach/mat-sach/{id}(id=${borrowOrder.getId()})}"><i class="fas fa-times-circle"></i></a>
+										</th:block>
+									</td>
+								</th:block>
+							</tr>
+						</th:block>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	
+	<script type="text/javascript"
+		src="https://cdn.datatables.net/v/ju/dt-1.10.18/datatables.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('#table-list-book').DataTable({
+				"language" : {
+					"zeroRecords" : "Không tìm thấy bản ghi nào",
+					"info" : "",
+					"emptyTable" : "Không có dữ liệu",
+					"search" : "Tìm kiếm:",
+					"infoFiltered" : "",
+					"infoEmpty" : "",
+					"lengthMenu" : "Hiển thị _MENU_ bản ghi"
+				}
+			});
+		});
+	</script>
+	
+	<div th:replace="layout :: footer"></div>
+</body>
+</html>

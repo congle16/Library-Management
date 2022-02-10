@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.team4.lib.model.mapper.UserModelMapper">
+
+	<resultMap id="UserResultMap"
+		type="com.team4.lib.domain.Users">
+		<result property="username" column="user_name" />
+		<result property="status" column="is_deleted" />
+	</resultMap>
+
+	<select id="findAllUser" resultMap="UserResultMap">
+		SELECT
+		*
+		FROM users u
+	</select>
+
+	<select id="findUserByUsernameOrMail" resultMap="UserResultMap"
+		parameterType="String">
+		SELECT
+		*
+		FROM
+		users u WHERE u.user_name = #{username} OR
+		u.mail = #{mail}
+	</select>
+
+	<select id="findUserById" resultMap="UserResultMap"
+		parameterType="int">
+		SELECT
+		*
+		FROM
+		users u WHERE u.id = #{id}
+	</select>
+
+	<select id="findUserByUsername" parameterType="String"
+		resultMap="UserModel">
+		SELECT
+		*
+		FROM users u join role r on u.role = r.role_id
+		WHERE
+		u.user_name = #{username}
+	</select>
+
+	<select id="findUserByMail" resultMap="UserResultMap"
+		parameterType="String">
+		SELECT
+		*
+		FROM
+		users u WHERE
+		u.mail = #{mail}
+	</select>
+
+	<select id="findUserByToken" resultMap="UserResultMap"
+		parameterType="String">
+		SELECT
+		*
+		FROM
+		users u WHERE
+		u.token = #{token}
+	</select>
+
+	<select id="checkUpdateUser" resultMap="UserResultMap"
+		parameterType="Users">
+		SELECT
+		*
+		FROM
+		users u WHERE u.id != #{id} AND (u.user_name
+		= #{username} OR u.mail =
+		#{mail})
+	</select>
+	<resultMap id="UserModel"
+		type="com.team4.lib.model.UserModel">
+		<id property="id" column="id" />
+		<result property="username" column="user_name" />
+		<result property="password" column="password" />
+		<result property="roleName" column="role_name" />
+	</resultMap>
+
+	<insert id='insertUser' parameterType='Users'>
+		INSERT INTO
+		USERS(user_name, password, mail, address, phone, create_user,
+		update_user, create_time, update_time)
+		VALUES(#{username},
+		#{password},
+		#{mail}, #{address}, #{phone},
+		#{createUser},#{updateUser},#{createTime},#{updateTime})
+	</insert>
+
+	<update id='updateUser' parameterType='Users'>
+		UPDATE users u
+		SET
+		u.user_name = #{username}, u.mail = #{mail},
+		u.address = #{address},
+		u.phone = #{phone}, u.token = #{token}
+		WHERE u.id = #{id};
+	</update>
+
+	<update id='editUser' parameterType='Users'>
+		UPDATE users u
+		SET u.password
+		= #{password}, u.address = #{address}, u.phone = #{phone}, u.role =
+		#{role}, u.is_deleted = #{status}, u.update_user = #{updateUser},
+		u.update_time = #{updateTime}
+		WHERE u.id = #{id};
+	</update>
+
+	<update id='changePasswordUser' parameterType='Users'>
+		UPDATE users u
+		SET
+		u.password = #{password}, u.update_user = #{updateUser}, u.update_time
+		= #{updateTime}
+		WHERE u.id = #{id};
+	</update>
+</mapper>
